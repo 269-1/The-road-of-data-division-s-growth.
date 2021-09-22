@@ -1,0 +1,15 @@
+Hello, I'm Liu Shuai from big data class 1. The theme of my speech is big data.
+It `s  mainly divided into the following five parts - introduction, data sources, Characteristics, tools and problem. 
+The first part is a brief introduction to big data .Big data is too big to be intercepted, managed, processed and sorted into information that can be interpreted by human beings in a reasonable time through existing means.
+Then, the second part is the data source, which is mainly divided into the following three parts.It includes Business data,Internet of things data,Internet data.
+Next, I want to talk about the characteristics of big data. 
+The first feature is Moore's law of big data, which roughly says that the amount of data will increase by fifty precent every two years. 
+The second is the large amount of data. Some experts once predicted that the amount of data will reach thirty-five zb by two thousand and twenty. 
+The third point is the diversity of data types, which may be scientific research data, data in practical application or data in the network.
+Then, this is a comparison with traditional data types. The data is mainly based on traditional data types. 
+The fourth point is high speed, which has a 1second theorem. It means     It takes only 1 second from data generation to decision response.
+The last feature is low value, that is, the proportion of useful data is relatively small. 
+The fourth part is tools. Our common tools are Hadoop, spark, hive, etc. 
+the first is Hadoop, and its schematic diagram is on the right, the second spark, and then hive. 
+The last part is a question, what is big data used for? 
+Thank you for your listenning.
