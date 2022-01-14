@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+	<head>
+		<meta charset="utf-8" />
+	    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+		<title>可视化-17195190</title>
+		<link rel="stylesheet" href="../static/css/bootstrap.min.css" />
+		<link rel="stylesheet" href="../static/css/app.css" />
+		<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=WE5DKEmSGtmh01T8u5jR6yGYQNm9RROG"></script>
+		<script type="text/javascript" src="../static/echarts.js"></script>
+		<script type="text/javascript" src="../static/bmap.js"></script>
+		<script type="text/javascript" src="../static/echarts-map-china.js"></script>
+	</head>
+
+	<body class="bg01">
+		<header class="header">
+			<h3>ETC入深圳数据可视化</h3>
+		</header>
+
+		<div class="wrapper">
+			<div class="container-fluid">
+				<div class="row fill-h">
+					<div class="col-lg-3 fill-h">
+						<div class="xpanel-wrapper xpanel-wrapper-2">
+							<div class="xpanel">
+								<!-- 地图飞线 -->
+								<div class="fill-h" id="chart1"></div>
+							</div>
+						</div>
+						<div class="xpanel-wrapper xpanel-wrapper-2">
+							<div class="xpanel">
+								<!-- 世界地图 -->
+								<div class="fill-h" id="chart2"></div>
+							</div>
+						</div>
+					</div>
+					<div class="col-lg-6 fill-h">
+						<div class="xpanel-wrapper xpanel-wrapper-1">
+							<div class="xpanel">
+								<!-- 地图散点 -->
+								<div class="fill-h" id="chart3"></div>
+							</div>
+						</div>
+					</div>
+					<div class="col-lg-3 fill-h">
+						<div class="xpanel-wrapper xpanel-wrapper-3">
+							<div class="xpanel">
+								<!-- 省份地图 -->
+								<div class="fill-h" id="chart4"></div>
+							</div>
+						</div>
+						<div class="xpanel-wrapper xpanel-wrapper-3">
+							<div class="xpanel">
+								<!-- 城市地图 -->
+								<div class="fill-h" id="chart5"></div>
+							</div>
+						</div>
+						<div class="xpanel-wrapper xpanel-wrapper-3">
+							<div class="xpanel">
+								<!-- 区县地图 -->
+								<div class="fill-h" id="chart6"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+<script type="text/javascript">
+setInterval(loadXMLDoc,1000)
+// var Chart = echarts.init(document.getElementById('myDiv'));
+ var myChart = echarts.init(document.getElementById('chart1'));
+ var myChart1 = echarts.init(document.getElementById('chart2'));
+ var myChart2 = echarts.init(document.getElementById('chart3'));
+ var myChart3 = echarts.init(document.getElementById('chart4'));
+ var myChart4 = echarts.init(document.getElementById('chart5'));
+ var myChart5 = echarts.init(document.getElementById('chart6'));
+ window.addEventListener("resize", () => {
+    this.myChart.resize();
+    this.myChart1.resize();
+    this.myChart2.resize();
+    this.myChart3.resize();
+    this.myChart4.resize();
+    this.myChart5.resize();
+});
+ // var pie1=echarts.init(document.getElementById('pie1'))
+ // var pie2=echarts.init(document.getElementById('pie2'))
+ // var begin;
+var last=-1;
+var begin;
+ var flag=1;
+ var flag1=1;
+ var flag2=1;
+ var flag3=1;
+ var flag4=1;
+ var flag5=1;
+function start6(){
+     flag5=1;
+}
+function stop6(){
+      flag5=0;
+}
+function loadXMLDoc() {
+      var xmlhttp;
+      if (window.XMLHttpRequest)
+      {
+        // IE7+, Firefox, Chrome, Opera, Safari 浏览器执行代码
+        xmlhttp=new XMLHttpRequest();
+      }
+      else
+      {
+        // IE6, IE5 浏览器执行代码
+        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+      }
+      xmlhttp.onreadystatechange=function()
+      {
+        if (xmlhttp.readyState==4 && xmlhttp.status==200)
+        {
+          var myArr = JSON.parse(this.responseText);
+          myFunction(myArr)
+        }
+      }
+      xmlhttp.open("GET","../static/data.json",true);
+      xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+      xmlhttp.send();
+}
+	function myFunction(result) {
+				/*if(result.length>=8&&(result[7]==0||result[7]==last)){
+					return;
+				}else{
+					last=result[7];
+				}*/
+				var color=[
+					'#dd6b66',
+					'#759aa0',
+					'#e69d87',
+					'#8dc1a9',
+					'#ea7e53',
+					'#eedd78',
+					'#73a373',
+					'#73b9bc',
+					'#7289ab',
+					'#91ca8c',
+					'#f49f42'
+				  ];
+				 var i=0;
+			var option = {
+					title:{
+						text:'累计车型数量统计',textStyle:{ //设置主标题风格
+			  fontSize:30,color:'blue',//设置主标题字体颜色
+				fontStyle:'',//主标题文字风格
+		  }}, toolbox: {show: true,orient: 'vertical',left: 'right',top: 'center',feature: {dataView: { readOnly: false }, restore: {},saveAsImage: {},magicType:{type:['line','bar']}}}
+				,tooltip: {trigger: 'item',formatter: '{b}: <br/>{c}',textStyle:{fontSize:25}},
+				xAxis: {type: 'category',data: result[0]['CX'],axisLabel: {fontSize:15,color:'grey'}},
+				yAxis: { type: 'value',axisLabel: {fontSize:20}},series: [{itemStyle: {
+				  color: function (param) {
+					return color[(++i)%color.length];
+				  }
+				}, name:'该车型数量', data: result[0]['number'],type: 'bar',
+					label: {formatter: '{c}',position: 'top', show: true,fontSize:20,color:'yellow'}}]};
+
+
+
+
+			  i=0;
+			  var option1 = {
+			   title:{text:'累计各收费站出口车辆经过数',textStyle:{ //设置主标题风格
+			  fontSize:30,color:'blue',//设置主标题字体颜色
+				fontStyle:'',//主标题文字风格
+		  }}, toolbox: {show: true,orient: 'vertical',left: 'right',top: 'center',
+			  feature:{dataZoom:{yAxisIndex:'none'},dataView: { readOnly: false }, restore: {},saveAsImage: {},magicType:{type:['line','bar']}}}
+			 ,tooltip: {trigger: 'item',formatter: '{b}: <br/>{c}',textStyle:{fontSize:25}},/*/!*visualMap: {
+					min: 0,
+					max: 8000,
+					calculable: false,
+					inRange: {
+						color: ['#54FF9F','Blue', 'yellow', 'red']
+					},
+					textStyle: {
+						color: '#F0FFF0',fontSize:30
+					}
+				}*!/,*/
+			  xAxis: {type: 'category',data: result[1]['SFZCKMC'],axisLabel: {fontSize:20,color: '#F0FFF0'}},
+			  yAxis: { type: 'value',axisLabel: {fontSize:18,color: '#F0FFF0'}},
+			  series: [{itemStyle: {
+			  color: function (param) {
+				return color[(++i)%color.length];
+			  }
+			}, name:'网站', data: result[1]['number'],type: 'bar',
+				  label: {formatter: '{c}',position: 'top', show: true,fontSize:20, color:'#BBFFFF'}}]};
+
+
+
+
+
+			i=0;
+			 var option2 = {
+					title:{
+						text:'累计各收费站入口车辆经过数TOP10',textStyle:{ //设置主标题风格
+			  fontSize:30,color:'blue',//设置主标题字体颜色
+				fontStyle:'',//主标题文字风格
+		  }}, toolbox: {show: true,orient: 'vertical',left: 'right',top: 'center',
+					 feature: {dataView: { readOnly: false }, restore: {},saveAsImage: {},magicType:{type:['line','bar']}}}
+			, tooltip: {trigger: 'item',formatter: '{b}: <br/>{c}',textStyle:{fontSize:25}}/*,visualMap: {
+					min: 0,
+					max: 4000,
+					calculable: false,
+					inRange: {
+						color: ['#54FF9F','Blue', 'yellow', 'red']
+					},
+					textStyle: {
+						color: '#F0FFF0',fontSize:30
+					}
+				}*/,
+			  xAxis: {type: 'category',data: result[2]['SFZRKMC'].slice(0,10),axisLabel: {fontSize:20,color:'#F0FFF0'}},
+			  yAxis: { type: 'value',axisLabel: {fontSize:18,color:'#F0FFF0'}},
+			  series: [{itemStyle: {
+				  color: function (param) {
+					return color[(++i)%color.length];
+				  }
+				}, name:'该收费站入口车辆数量TOP15', data: result[2]['number'].slice(0,10),type: 'bar',
+				  label: {formatter: '{c}',position: 'top', show: true,fontSize:20,color:'#BBFFFF'}}]};
+
+
+
+
+			i=0;
+			var option3 = {title:{
+							text:'累计来自全国车辆出入深圳收费站统计TOP15',textStyle:{ //设置主标题风格
+			  fontSize:30,color:'blue',//设置主标题字体颜色
+				fontStyle:'',//主标题文字风格
+		  }}, toolbox: {show: true,orient: 'vertical',left: 'right',top: 'center',
+					feature: {dataView: { readOnly: false }, restore: {},saveAsImage: {},magicType:{type:['line','bar']}}},
+				tooltip: {trigger: 'item',formatter: '{b}: <br/>{c}',textStyle:{fontSize:25}},
+				xAxis: {type: 'category',data: result[3]['city'],axisLabel: {fontSize:15,color:'#F0FFF0'}},
+				yAxis: { type: 'value',axisLabel: {fontSize:20,color:'#F0FFF0'}},
+				series: [{ name:'来自城市的车辆数',
+				data: result[3]['number'],type: 'line',
+					  legend: {show: true,textStyle: {fontSize:20}},}],label: {
+				  // color:"blue",
+				  formatter: '{c}',
+				  show: true,
+				  precision: 1,
+				  position: 'right',
+				  valueAnimation: true,
+				  fontSize:20,color:'blue'
+				}};
+			//  var color_use=[]
+			// for(var i;i<result[3]['city'].length();i++){
+			//     color_use.append(color[])
+			// }
+
+
+
+
+			i=0;
+			var y=result[3]['city'].slice(0,10);
+			var x=result[3]['number'].slice(0,10);
+			var option4 = {title:{text:'累计来自全国车辆出入深圳收费站统计TOP10',textStyle:{ //设置主标题风格
+			  fontSize:30,color:'blue',//设置主标题字体颜色
+				fontStyle:'',//主标题文字风格
+		  }},tooltip: {trigger: 'item',formatter: '{b}: <br/>{c}',textStyle:{fontSize:25}},
+				xAxis: { max: 'dataMax' ,axisLabel: {fontSize:20,color:'#F0FFF0'}},
+				yAxis: {type: 'category', data:y,inverse: true,animationDuration: 300,animationDurationUpdate: 300, max: 9 // only the largest 3 bars will be displayed
+			  , axisLabel: {
+				show: true,
+				fontSize: 20,color:'#F0FFF0',
+				formatter: function (value) {
+				  return value+':'}}},
+				series: [{itemStyle: {
+				  color: function (param) {
+					return color[(++i)%color.length];
+				  }
+				},realtimeSort: true, name: '来自城市的车辆数',type: 'bar',data:x,
+					label: {show: true,position: 'right',valueAnimation: true}}],
+				  animationDuration:0,
+				  animationDurationUpdate:1000,
+				  animationEasing   : 'linear',
+				  animationEasingUpdate: 'linear',
+				  label: {
+				  // color:"blue",
+				  show: true,
+				  precision: 1,
+				  position: 'right',
+				  valueAnimation: true,
+				  fontFamily: 'monospace',
+				  fontSize:27, color:'#BBFFFF'
+				}
+			};
+
+
+
+			i=0;
+			const scatterGeo = result[4]['city_jinwei']
+			//城市数据
+			const scatterVal = result[4]['city_number']
+			//数据转换，转换后的格式：[{name: 'cityName', value: [lng, lat, val]}, {...}]
+			const convertScatterData = function(data) {
+				let res = [];
+				for(let i=0;i<data.length;i++) {
+					let geoCoord = scatterGeo[data[i].name];
+					if(geoCoord) {
+						res.push({
+							name: data[i].name,
+							value: geoCoord.concat(data[i].value)
+						});
+					}
+				}
+				return res;
+			};
+			//地图配置项
+			var option5= {
+				title: {
+					text: '全国城市车辆出入深圳数量分布',
+					subtext:'当前数据条数：'+result[7],
+					textStyle: {
+						color: 'blue',fontSize:34
+					},left:'center',subtextStyle:{
+						color: '#696969',fontSize:25,fontFamily:'bold'
+					},sublink:'https://opendata.sz.gov.cn/data/dataSet/toDataDetails/29200_00403621'
+				},
+				legend: {
+					data: ['全国各地车辆数'], //与series的name属性对应
+					orient: 'vertical',
+					y: 'top',
+					x: 'right',
+					textStyle: {
+						color: 'LightSteelBlue',fontSize:25
+					}
+				},
+				tooltip: {
+					trigger: 'item',
+					formatter: function(params) {
+						return params.name + ' : ' + params.value[2];
+					}
+					,textStyle:{fontSize:30}
+				},
+				visualMap: {
+					min: 0,
+					max: 2000,
+					calculable: true,
+					inRange: {
+						color: ['#54FF9F','Blue', 'yellow', 'red']
+					},
+					textStyle: {
+						color: 'Cyan',fontSize:25
+					}
+				},
+				geo: {
+					map: 'china',
+					roam: true, //开启鼠标缩放和漫游
+					zoom: 1, //地图缩放级别
+					selectedMode: false, //选中模式：single | multiple
+					left: 0,
+					right: 0,
+					top: 0,
+					bottom: 0,
+					// layoutCenter: ['50%', '50%'], //设置后left/right/top/bottom等属性无效
+					layoutSize: '120%',
+					label: {
+						emphasis: {
+							show: false
+						}
+					},
+					itemStyle: {
+						normal: {
+							areaColor: 'black',
+							borderWidth: 1.1,
+							borderColor: '#43d0d6'
+						},
+						emphasis: {
+							areaColor: '#069'
+						}
+					}
+				},
+				series: [{
+					name: '全国各地车辆数',
+					type: 'scatter',
+					coordinateSystem: 'geo',
+					symbolSize: 12,
+					label: {
+						normal: {
+							show: false
+						},
+						emphasis: {
+							show: false
+						}
+					},
+					data: convertScatterData(scatterVal)
+				}]
+			};
+
+			 //添加饼图
+			 i=0;
+			 var option6 = {
+			  title: {
+				text: '各种车辆类型占比',
+				left: 'center',textStyle:{fontSize:30,color:'blue'}
+			  },
+			  tooltip: {formatter: '{a}<br/>{b}:{c}'+'%',
+				trigger: 'item',textStyle:{fontSize:25}
+			  },
+			  legend: {
+				orient: 'vertical',
+				left: 'left',textStyle:{fontSize:20}
+			  },
+			  series: [
+				{itemStyle: {
+				  color: function (param) {
+					return color[(++i)%color.length];
+				  }
+				},label: {formatter: '{b}', show: true,fontSize:22},
+				  name: '车型',
+				  type: 'pie',
+				  radius: '50%',
+				  data: result[5]['number'],
+				  emphasis: {
+					itemStyle: {
+					  shadowBlur: 10,
+					  shadowOffsetX: 0,
+					  shadowColor: 'rgba(0, 0, 0, 0.5)'
+					}
+				  }
+				}
+			  ]
+			};
+			var option7 = {
+			  title: {
+				text: '各出深圳站点车辆经过占比',
+				left: 'center',textStyle:{fontSize:30,color:'blue'}
+			  },
+			  tooltip: {formatter: '{a}<br/>{b}:{c}'+'%',
+				trigger: 'item',textStyle:{fontSize:25}
+			  },
+			  legend: {
+				orient: 'vertical',
+				left: 'left',textStyle:{fontSize:20}
+			  },
+			  series: [
+				{itemStyle: {
+				  color: function (param) {
+					return color[(++i)%color.length];
+				  },fontSize:30
+				},label: {formatter: '{b}', show: true,fontSize:22},
+				  name: '出站点',
+				  type: 'pie',
+				  radius: '50%',
+				  data: result[6]['number'],
+				  emphasis: {
+					itemStyle: {
+					  shadowBlur: 10,
+					  shadowOffsetX: 0,
+					  shadowColor: 'rgba(0, 0, 0, 0.5)',
+						fontSize:30
+					}
+				  }
+				}
+			  ]
+			 };
+			if(flag) {
+				// myChart.setOption(option);
+				// pie1.setOption(option6);
+				myChart.setOption(option6);
+			}
+			if(flag1) {
+				// myChart1.setOption(option1);
+				// pie2.setOption(option7);
+				myChart1.setOption(option7);
+			}
+			if(flag2)
+				myChart2.setOption(option5);
+			if(flag3)
+				myChart3.setOption(option2);
+			if(flag4) {
+				myChart4.setOption(option1);
+			}
+			if(flag5) {
+				myChart5.setOption(option4);
+			}
+			// out='当前数据条数为:'+result[7];
+			// document.getElementById('myDiv').innerText=out;
+			}
+		</script>
+	</body>
+</html>
